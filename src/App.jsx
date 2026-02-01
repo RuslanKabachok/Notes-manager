@@ -1,24 +1,17 @@
+import { useState } from 'react'
+
 import './App.css'
-import Header from './HeaderComponent/Header'
-import NoteForm from './NoteFormComponent/NoteForm'
+import Header from './Header/Header'
+import NoteForm from './NoteForm/NoteForm'
+import NotesManager from './NotesManager/NotesManager'
 
 function App() {
-
-  const onChange = (e) => { console.log(e.target.value) }
-  const SubmitForm = (e) => {
-    e.preventDefault()
-
-    return {
-      title: e.target.elements.noteTitle.value,
-      text: e.target.elements.noteText.value,
-      tag: e.target.elements.noteTag.value
-    }
-  }
+  const [query, setQuery] = useState('');
 
   return (
     <div className='p-10 font-serif bg-gray-300'>
-      <Header title='Notes manager' onChange={onChange} />
-      <NoteForm SubmitForm={SubmitForm} />
+      <Header title='Notes manager' onChange={(e) => { setQuery(e.target.value) }} query={query} />
+      <NotesManager />
     </div>
   )
 }
