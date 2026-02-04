@@ -3,6 +3,7 @@ import '../App.css'
 import NoteForm from '../NoteForm/NoteForm';
 import NoteList from '../NoteList/NoteList'
 import { nanoid } from 'nanoid';
+import Modal from '../Modal/Modal';
 
 export default function NotesManager() {
     const [notes, setNotes] = useState([]);
@@ -11,7 +12,10 @@ export default function NotesManager() {
     const [tag, setTag] = useState('common');
     const [isEditing, setIsEditing] = useState(false);
 
-    const SubmitForm = (e) => {
+    const [editingNote, setEditingNote] = useState({});
+
+
+    const submitForm = (e) => {
         e.preventDefault()
 
         const newNote = {
@@ -27,17 +31,18 @@ export default function NotesManager() {
         setTag('common')
     }
 
-    const DeleteNote = (id) => setNotes(notes.filter((note) => note.id !== id));
+    const deleteNote = (id) => setNotes(notes.filter((note) => note.id !== id));
 
-    const EditNote = (id) => {
-
+    const openModal = (id) => {
+        const noteToEdit = notes.find(note => note.id === id)
+        setEditingNote(noteToEdit);
         setIsEditing(true);
+    }
 
-        setNotes(notes.map((note) => {
-            if (note.id == id) {
-                return { ...note, title: 'newnewnew', text: 'hahahahah' }
-            }
-        }))
+    const editNote = (newNote) => {
+        setNotes(prevNotes => prevNotes.map(note => note.id === newNote.id ? newNote : note))
+
+        setIsEditing(false);
     }
 
     return (
@@ -46,12 +51,15 @@ export default function NotesManager() {
                 title={title}
                 description={description}
                 tag={tag}
-                SubmitForm={SubmitForm}
+                submitForm={submitForm}
                 onTagChange={(e) => { setTag(e.target.value) }}
                 onTitleChange={(e) => { setTitle(e.target.value) }}
                 onDescrChange={(e) => { setDescription(e.target.value) }} />
 
-            {!notes.length ? null : <NoteList data={notes} onEdit={EditNote} onDelete={DeleteNote} />}
+            {!notes.length ? null : <NoteList data={notes} onEditPress={openModal} onDelete={deleteNote} />}
+
+            {!isEditing ? null :
+                <Modal noteToEdit={editingNote} onEdit={editNote} closeModal={() => { setIsEditing(false) }} />}
         </>
     )
 }

@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 import './App.css'
 import Header from './Header/Header'
-import NoteForm from './NoteForm/NoteForm'
 import NotesManager from './NotesManager/NotesManager'
 
 function App() {
