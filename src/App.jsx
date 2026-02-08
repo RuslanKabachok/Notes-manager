@@ -10,7 +10,7 @@ function App() {
   return (
     <div className='p-10 font-serif bg-gray-300'>
       <Header title='Notes manager' onChange={(e) => { setQuery(e.target.value) }} query={query} />
-      <NotesManager />
+      <NotesManager search={query} />
     </div>
   )
 }

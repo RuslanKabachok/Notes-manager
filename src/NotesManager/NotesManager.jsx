@@ -5,15 +5,15 @@ import NoteList from '../NoteList/NoteList'
 import { nanoid } from 'nanoid';
 import Modal from '../Modal/Modal';
 
-export default function NotesManager() {
+export default function NotesManager({ search }) {
     const [notes, setNotes] = useState([]);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [tag, setTag] = useState('common');
     const [isEditing, setIsEditing] = useState(false);
-
     const [editingNote, setEditingNote] = useState({});
 
+    const filteredNotes = () => notes.filter((note) => note.text.includes(search))
 
     const submitForm = (e) => {
         e.preventDefault()
@@ -56,7 +56,7 @@ export default function NotesManager() {
                 onTitleChange={(e) => { setTitle(e.target.value) }}
                 onDescrChange={(e) => { setDescription(e.target.value) }} />
 
-            {!notes.length ? null : <NoteList data={notes} onEditPress={openModal} onDelete={deleteNote} />}
+            {!notes.length ? null : <NoteList data={filteredNotes()} onEditPress={openModal} onDelete={deleteNote} />}
 
             {!isEditing ? null :
                 <Modal noteToEdit={editingNote} onEdit={editNote} closeModal={() => { setIsEditing(false) }} />}
