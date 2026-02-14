@@ -7,7 +7,10 @@ import { nanoid } from 'nanoid';
 import Modal from '../Modal/Modal';
 
 export default function NotesManager({ search }) {
-    const [notes, setNotes] = useState([]);
+    const [notes, setNotes] = useState(() => {
+        const savedNotes = localStorage.getItem('notes')
+        return savedNotes ? JSON.parse(savedNotes) : []
+    });
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [tag, setTag] = useState('common');
@@ -16,13 +19,8 @@ export default function NotesManager({ search }) {
     const [filter, setFilter] = useState('all');
 
     useEffect(() => {
-        const savedNotes = localStorage.getItem('notes')
-
-        if (savedNotes) {
-            setNotes(JSON.parse(savedNotes));
-        }
-    }, [])
-
+        localStorage.setItem('notes', JSON.stringify(notes))
+    }, [notes])
 
     const filteredNotes = notes.filter((note) => note.text.includes(search) && (note.tag === filter || filter === 'all'))
 
