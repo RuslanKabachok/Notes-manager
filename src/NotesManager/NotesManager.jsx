@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../App.css'
 import NoteForm from '../NoteForm/NoteForm';
-import NoteList from '../NoteList/NoteList'
+import NoteList from '../NoteList/NoteList';
+import FilterPanel from '../FilterPanel/FilterPanel';
 import { nanoid } from 'nanoid';
 import Modal from '../Modal/Modal';
 
@@ -12,8 +13,18 @@ export default function NotesManager({ search }) {
     const [tag, setTag] = useState('common');
     const [isEditing, setIsEditing] = useState(false);
     const [editingNote, setEditingNote] = useState({});
+    const [filter, setFilter] = useState('all');
 
-    const filteredNotes = () => notes.filter((note) => note.text.includes(search))
+    useEffect(() => {
+        const savedNotes = localStorage.getItem('notes')
+
+        if (savedNotes) {
+            setNotes(JSON.parse(savedNotes));
+        }
+    }, [])
+
+
+    const filteredNotes = notes.filter((note) => note.text.includes(search) && (note.tag === filter || filter === 'all'))
 
     const submitForm = (e) => {
         e.preventDefault()
@@ -25,10 +36,13 @@ export default function NotesManager({ search }) {
             id: nanoid(),
         }
 
+        localStorage.setItem('notes', JSON.stringify(notes))
+
         setNotes(prevNotes => [...prevNotes, newNote])
         setTitle('')
         setDescription('')
         setTag('common')
+        setFilter('all')
     }
 
     const deleteNote = (id) => setNotes(notes.filter((note) => note.id !== id));
@@ -56,7 +70,7 @@ export default function NotesManager({ search }) {
                 onTitleChange={(e) => { setTitle(e.target.value) }}
                 onDescrChange={(e) => { setDescription(e.target.value) }} />
 
-            {!notes.length ? null : <NoteList data={filteredNotes()} onEditPress={openModal} onDelete={deleteNote} />}
+            {!notes.length ? <p className='text-center'>Нотаток немає</p> : <> <FilterPanel filter={filter} onFilterChange={(e) => { setFilter(e.target.value) }} /> <NoteList data={filteredNotes} onEditPress={openModal} onDelete={deleteNote} /></>}
 
             {!isEditing ? null :
                 <Modal noteToEdit={editingNote} onEdit={editNote} closeModal={() => { setIsEditing(false) }} />}
